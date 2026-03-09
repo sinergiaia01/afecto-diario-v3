@@ -68,25 +68,13 @@ const sanitizeUrl = (url: string | undefined): string => {
     const paramsToClean = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 's'];
     paramsToClean.forEach(p => urlObj.searchParams.delete(p));
 
-    const path = urlObj.pathname.toLowerCase();
     const domain = urlObj.hostname.toLowerCase();
 
-    const forbiddenDomains = ['google.com', 'bing.com', 'search.yahoo.com', 't.co', 'bit.ly', 'facebook.com/share'];
+    // Solo bloqueamos dominios de "compartir" o buscadores genéricos
+    const forbiddenDomains = ['bing.com', 'search.yahoo.com', 'facebook.com/share'];
     if (forbiddenDomains.some(d => domain.includes(d))) return "";
 
-    const segments = path.split('/').filter(s => s.length > 0);
-    const lastSegment = segments[segments.length - 1] || "";
-
-    const isDeepLink = (
-      lastSegment.includes('-') ||
-      /\d/.test(lastSegment) ||
-      lastSegment.includes('.html') ||
-      lastSegment.includes('.php') ||
-      lastSegment.length > 18
-    );
-
-    if (segments.length <= 1 && !isDeepLink) return "";
-
+    // Si es un dominio de noticias conocido o red social, permitimos más flexibilidad
     return urlObj.toString();
   } catch (e) {
     return "";
@@ -241,12 +229,12 @@ export const fetchAndAnalyzeNews = async (province: string = "Todas"): Promise<N
       };
     });
 
-    // Fill missing URLs slightly less aggressively to save time/tokens if needed, or keep same logic
-    const missingUrls = newsItems.filter((n: any) => !n.url).slice(0, 2);
-    for (const item of missingUrls) {
+    // Probar verificar más URLs (hasta 4) de forma paralela para no ralentizar tanto
+    const missingItems = newsItems.filter((n: any) => !n.url).slice(0, 4);
+    await Promise.all(missingItems.map(async (item: any) => {
       const found = await discoverVerifiedUrl(item.title, item.source);
       if (found) item.url = found;
-    }
+    }));
 
     return newsItems;
   } catch (error) {

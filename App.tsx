@@ -258,8 +258,8 @@ const App: React.FC = () => {
                                   <span>Leer Nota</span> <ExternalLink className="w-3 h-3" />
                                 </a>
                               ) : (
-                                <a href={`https://www.google.com/search?q=${encodeURIComponent(item.searchQuery || item.title)}`} target="_blank" rel="noopener noreferrer" className="bg-white border border-slate-200 hover:border-slate-300 text-slate-500 text-[10px] font-bold px-4 py-2 rounded-full flex items-center space-x-2 transition-all">
-                                  <span>Explorar</span> <Search className="w-3 h-3" />
+                                <a href={`https://www.google.com/search?q=${encodeURIComponent(`${item.title} ${item.source} ${item.province} hoy argentina`)}`} target="_blank" rel="noopener noreferrer" className="bg-white border border-slate-200 hover:border-slate-300 text-slate-500 text-[10px] font-bold px-4 py-2 rounded-full flex items-center space-x-2 transition-all">
+                                  <span>Buscar en {item.source}</span> <Search className="w-3 h-3" />
                                 </a>
                               )}
                             </div>
