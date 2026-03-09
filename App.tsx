@@ -49,20 +49,29 @@ const App: React.FC = () => {
   const [chatLoading, setChatLoading] = useState(false);
 
   // Filters & Data
-  const [selectedProvince, setSelectedProvince] = useState<string>("Todas");
+  const [selectedProvince, setSelectedProvince] = useState<string>("Jujuy");
 
   // Weekly Summary Data
   const [weeklySummary, setWeeklySummary] = useState<WeeklySummaryItem | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadNews = useCallback(async (provinceOverride?: string) => {
     const provinceToFetch = provinceOverride || selectedProvince;
     setLoading(true);
+    setError(null);
     try {
       const data = await fetchAndAnalyzeNews(provinceToFetch);
-      // Sort by impact score
+      if (data.length === 0) {
+        setError("No se encontraron señales de Jujuy en este momento. Intenta actualizar más tarde.");
+      }
       setNews(data.sort((a, b) => b.impactScore - a.impactScore));
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.message?.includes("429") || error?.message?.includes("quota")) {
+        setError("Límite de Consultas Alcanzado: La IA de Maia ha trabajado mucho hoy. Por favor, intenta de nuevo en unos minutos o mañana.");
+      } else {
+        setError("Hubo un problema al conectar con el satélite social. Refresca la página.");
+      }
       setNews([]);
     } finally {
       setLoading(false);
@@ -207,7 +216,14 @@ const App: React.FC = () => {
           </div>
         ) : (
           <>
-            {socialAlert && (
+            {error && (
+              <div className="mb-8 p-6 bg-amber-50 border-l-4 border-amber-500 rounded-r-2xl flex items-start space-x-4 animate-in fade-in duration-500">
+                <AlertTriangle className="w-6 h-6 text-amber-600" />
+                <div><h3 className="font-bold text-amber-900">Aviso de Maia</h3><p className="text-amber-700 text-sm">{error}</p></div>
+              </div>
+            )}
+
+            {socialAlert && !error && (
               <div className="mb-8 p-6 bg-red-50 border-l-4 border-red-500 rounded-r-2xl flex items-start space-x-4 animate-in slide-in-from-top-2 duration-500">
                 {socialAlert.icon}
                 <div><h3 className="font-bold text-red-900">{socialAlert.title}</h3><p className="text-red-700 text-sm">{socialAlert.desc}</p></div>

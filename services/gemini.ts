@@ -163,6 +163,7 @@ export const fetchAndAnalyzeNews = async (province: string = "Todas"): Promise<N
       REGLAS:
       - Simula un volumen de datos masivo.
       - Si detectas una noticia de INDIGNACIÓN masiva en curso (ej. por economía o clima), el impactScore será altísimo.
+      - OBLIGATORIO: El campo "province" debe ser "Jujuy" para todas las noticias encontradas.
       - Devuelve SOLO el array JSON.
     `;
 
@@ -177,6 +178,7 @@ export const fetchAndAnalyzeNews = async (province: string = "Todas"): Promise<N
 
     let data;
     try {
+      console.log("MAIA_DEBUG: Raw JSON from AI:", cleanJson);
       data = JSON.parse(cleanJson);
     } catch (parseError) {
       console.error("Error al parsear JSON complejo:", parseError);
