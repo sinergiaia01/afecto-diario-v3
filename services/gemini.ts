@@ -4,16 +4,17 @@ import { sendTelegramAlert } from './notifications';
 
 const getApiKey = () => {
   try {
-    return process.env.GROK_API_KEY || process.env.API_KEY || process.env.GEMINI_API_KEY || "";
+    // Gemini es gratuito y está configurado. Usamos ese como primario.
+    return process.env.GEMINI_API_KEY || process.env.API_KEY || "";
   } catch (e) {
     return "";
   }
 };
 
-// Initialize xAI (Grok) Client
+// Cliente Gemini (Google AI) — GRATUITO
 const client = new OpenAI({
   apiKey: getApiKey(),
-  baseURL: "https://api.x.ai/v1",
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
   dangerouslyAllowBrowser: true
 });
 
@@ -100,7 +101,7 @@ export const fetchAndAnalyzeNews = async (province: string = "Jujuy"): Promise<N
     `;
 
     const response = await client.chat.completions.create({
-      model: "grok-4",
+      model: "gemini-2.0-flash",
       messages: [
         { role: "system", content: "Eres Maia, una analista de inteligencia social experta en el nicho de Jujuy, Argentina. Proporcionas datos crudos, reales y sin censura sobre el clima social local." },
         { role: "user", content: prompt }
@@ -165,7 +166,7 @@ export const fetchAndAnalyzeNews = async (province: string = "Jujuy"): Promise<N
 export const generateWeeklySummary = async (): Promise<any> => {
   try {
     const response = await client.chat.completions.create({
-      model: "grok-4",
+      model: "gemini-2.0-flash",
       messages: [
         { role: "user", content: 'Genera un "Resumen Semanal de Impacto Social" para Jujuy, Argentina. JSON format con: startDate, endDate, nationalMood, mostDiscussedTopic, topNews[3].' }
       ]
@@ -180,7 +181,7 @@ export const askAssistant = async (question: string, contextNews: NewsItem[]) =>
   try {
     const contextString = contextNews.map(n => `- ${n.title}`).join('\n');
     const response = await client.chat.completions.create({
-      model: "grok-4",
+      model: "gemini-2.0-flash",
       messages: [
         { role: "system", content: "Eres Maia, analista de Jujuy. Responde de forma empática pero basada en datos." },
         { role: "user", content: `Contexto Jujuy:\n${contextString}\n\nPregunta: ${question}` }
