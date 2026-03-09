@@ -31,7 +31,7 @@ const cleanJsonString = (str: string): string => {
 
 // --- DATASET DE MEDIOS ---
 const PROVINCE_MEDIA_SOURCES: Record<string, string> = {
-  "Jujuy": "Jujuy Dice, El Tribuno de Jujuy, Todo Jujuy",
+  "Jujuy": "El Tribuno de Jujuy, Jujuy al Día, Somos Jujuy, Todo Jujuy, Jujuy Dice, Periódico Lea, Canal 7 de Jujuy",
   "Córdoba": "La Voz del Interior, Cadena 3, Cba24n",
   "Santa Fe": "El Litoral, La Capital de Rosario, Rosario3",
   "Mendoza": "Los Andes, Diario Uno, MDZ Online",
@@ -111,29 +111,28 @@ export const fetchAndAnalyzeNews = async (province: string = "Todas"): Promise<N
   try {
     const todayDate = new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    let contextPrompt = province === "Todas" || province === "Nacional"
-      ? `Identifica las 6 noticias más impactantes de HOY (${todayDate}) en Argentina.`
-      : `Identifica las 5 noticias más importantes de HOY (${todayDate}) en la provincia de ${province}.`;
+    let contextPrompt = province === "Todas" || province === "Nacional" || province === "Jujuy"
+      ? `Prioridad ABSOLUTA: Jujuy. Identifica las 6 noticias/tendencias más calientes en redes sociales (TikTok, X) de HOY (${todayDate}) específicamente en la Provincia de Jujuy, Argentina. Si hay temas nacionales (dólar, Messi), analízalos desde la perspectiva del impacto local en Jujuy.`
+      : `Identifica las 5 noticias más importantes de HOY (${todayDate}) en la provincia de ${province}. No olvides el impacto en el clima social de Jujuy si es relevante.`;
 
     const prompt = `
-      Eres un Arquitecto de Big Data Social y Analista de Inteligencia. Fecha: ${todayDate}.
+      Eres el Monitor de Inteligencia Social "Maia". Tu nicho y foco principal es JUJUY, Argentina. Fecha: ${todayDate}.
       ${contextPrompt}
       
-      IMPORTANTE: Tu búsqueda debe priorizar la "Escucha Activa". No busques solo diarios (diarios de papel o portales), busca TENDENCIAS REALES de X (Twitter), TikTok y búsquedas de Google en Argentina.
+      MISIÓN: Ser los ojos y oídos del usuario en JUJUY.
+      - Prioriza TENDENCIAS REALES de TikTok (virales locales), X (Twitter Jujuy) y debates en grupos locales de Facebook.
+      - Sé ESTRICTO con los datos: No inventes noticias genéricas. Busca conflictos reales, política local, eventos culturales o crisis de servicios en Jujuy.
       
-      TEMAS BASE DETECTADOS (Úsalos como guía para profundizar):
-      - Mercado: Inestabilidad por conflicto Medio Oriente, Dólar a $1415.
-      - Social: Malestar social creciente (Índice IDI en valores bajos). Éxito de contenidos locales en streaming.
-      - Tendencias: Messi, Franco, Maradona, Susana, Aranda.
-      - Alertas: Luvias fuertes y granizo en CABA/Buenos Aires.
-      
-      Por cada item destacado, genera un análisis profundo que incluya:
+      TEMAS BASE DETECTADOS EN JUJUY (Úsalos como guía):
+      - Coyuntura: Impacto del dólar a $1415 en comercios de San Salvador y frontera.
+      - Redes: Búsquedas crecientes sobre festivales locales, cortes de ruta o reclamos municipales.
+      - TikTok: Usuarios virales de Jujuy comentando el costo de vida o tendencias de humor regional.
       
       Estructura JSON:
       {
-        "title": "Título del tema o hilo viral",
-        "source": "Red Social dominante (X, TikTok, FB, IG)",
-        "summary": "Resumen ejecutivo del conflicto o debate",
+        "title": "Título exacto del debate o noticia local",
+        "source": "Específica (TikTok Jujuy, X Jujuy, El Tribuno, etc)",
+        "summary": "Contexto crudo de lo que pasa en la calle hoy en Jujuy",
         "emotion": "Una de: Alegría, Tristeza, Ira, Miedo, Sorpresa, Indignación, Esperanza, Empatía",
         "intensity": 1-10,
         "province": "Provincia específica o Nacional",
@@ -214,10 +213,10 @@ export const fetchAndAnalyzeNews = async (province: string = "Todas"): Promise<N
         discussionVolume: item.platformStats?.find((p: any) => p.name === 'Twitter')?.engagement || Math.floor(Math.random() * 100),
         coherenceScore: Math.round(avgSentiment / 10),
         impactScore: impactScore,
-        culturalContext: `Análisis de pulso social basado en tendencias de redes y búsqueda en tiempo real en ${item.province}.`,
-        province: item.province || province,
+        culturalContext: `Escucha activa focalizada en el nicho regional de Jujuy. Análisis de redes sociales (TikTok/X) y medios locales.`,
+        province: item.province || "Jujuy",
         url: sanitizeUrl(item.url),
-        searchQuery: item.searchQuery || `${item.title} ${item.source} twitter argentina`,
+        searchQuery: item.searchQuery || `${item.title} Jujuy hoy tiktok twitter`,
         publicationDate: item.publicationDate || "Reciente",
         timestamp: new Date().toISOString(),
         reactions: [],
