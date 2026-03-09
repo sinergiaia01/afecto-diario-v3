@@ -2,11 +2,19 @@ import OpenAI from "openai";
 import { NewsItem, Emotion, SocialReaction, SentimentBreakdown } from '../types';
 import { sendTelegramAlert } from './notifications';
 
+const getApiKey = () => {
+  try {
+    return process.env.API_KEY || process.env.GEMINI_API_KEY || "";
+  } catch (e) {
+    return "";
+  }
+};
+
 // Initialize xAI (Grok) Client
 const client = new OpenAI({
-  apiKey: process.env.API_KEY || process.env.GEMINI_API_KEY,
+  apiKey: getApiKey(),
   baseURL: "https://api.x.ai/v1",
-  dangerouslyAllowBrowser: true // Required for client-side usage in Vite
+  dangerouslyAllowBrowser: true
 });
 
 /**
