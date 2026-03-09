@@ -287,7 +287,7 @@ const App: React.FC = () => {
 
                   <div className="lg:col-span-1">
                     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm sticky top-24 overflow-hidden h-[500px] flex flex-col">
-                      <div className="p-4 bg-slate-50 border-b flex items-center space-x-2"><Bot className="w-4 h-4 text-blue-600" /><h3 className="font-bold text-sm">AfectoBot</h3></div>
+                      <div className="p-4 bg-slate-50 border-b flex items-center space-x-2"><Bot className="w-4 h-4 text-blue-600" /><h3 className="font-bold text-sm">Maia (Analista de Jujuy)</h3></div>
                       <div className="flex-1 overflow-y-auto p-4 space-y-4">
                         {chatHistory.map((m, i) => (
                           <div key={i} className={`text-xs p-3 rounded-xl ${m.role === 'user' ? 'bg-blue-600 text-white ml-8 shadow-md' : 'bg-slate-100 text-slate-800 mr-8'}`}>
@@ -300,8 +300,8 @@ const App: React.FC = () => {
                         <input
                           value={chatMessage}
                           onChange={e => setChatMessage(e.target.value)}
-                          placeholder="Consultar analista..."
-                          className="w-full text-xs p-3 bg-slate-50 rounded-lg outline-none border border-transparent focus:border-blue-200 transition-all"
+                          placeholder="Hablar con Maia sobre Jujuy..."
+                          className="w-full text-xs p-3 bg-slate-50 rounded-lg outline-none border border-transparent focus:border-blue-200 transition-all font-medium"
                         />
                       </form>
                     </div>
